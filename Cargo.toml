@@ -1,5 +1,5 @@
 [package]
-name = "tracing-ffi"
+name = "tracing-ext-ffi-subscriber"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,3 +8,6 @@ edition = "2021"
 [dependencies]
 parking_lot = "0.12"
 tracing = "0.1"
+
+[build-dependencies]
+cbindgen = "0.23"
