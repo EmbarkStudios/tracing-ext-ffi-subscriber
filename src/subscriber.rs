@@ -53,12 +53,11 @@ impl tracing::Subscriber for ExternFFISpanSubscriber {
         let id = self
             .counter
             .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        let name = attrs.fields().field("name").unwrap();
 
-        let name = CString::new(name.as_ref()).unwrap_or_else(|_| {
-            // Safety: This can never contain internal 0 bytes
-            CString::new("malformed_string").unwrap()
-        });
+        let name = match CString::new(attrs.metadata().name()) {
+            Ok(n) => n,
+            Err(_) => CString::new("malformed name").unwrap(),
+        };
 
         self.labels.write().insert(id, name);
         tracing::span::Id::from_u64(id)
