@@ -102,9 +102,10 @@ confidence-threshold = 0.8
 # Allow 1 or more licenses on a per-crate basis, so that particular licenses
 # aren't accepted for every possible crate as with the normal allow list
 exceptions = [
-    # Each entry is the crate and version constraint, and its specific allow
-    # list
-    #{ allow = ["Zlib"], name = "adler32", version = "*" },
+    # Only used during builds, pulled in via cbindgen
+    { allow = ["BSD-3-Clause"], name = "instant", version = "0.1.12" },
+    # Only used during builds, pulled in via cbindgen
+    { allow = ["MPL-2.0"], name = "cbindgen", version = "0.23.0" },
 ]
 
 # Some crates don't have (easily) machine readable licensing information,
