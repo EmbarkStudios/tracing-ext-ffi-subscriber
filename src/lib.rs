@@ -57,7 +57,6 @@ pub type EndTraceScopeFn = unsafe extern "C" fn(name: *const c_char);
 /// # Safety
 ///
 /// * Is assumed to a valid and 'static pointer matching the signature.
-
 pub type IsEnabledFn = unsafe extern "C" fn() -> bool;
 
 /// Simple error codes used for FFI calls.
