@@ -3,6 +3,10 @@ use std::io::ErrorKind;
 use cbindgen::Language;
 
 fn main() {
+    if std::env::var_os("DOCS_RS").is_some() { 
+        return;
+    }
+
     let mut delete_path = None;
     let crate_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
     let crate_dir = std::path::PathBuf::from(&crate_dir);
