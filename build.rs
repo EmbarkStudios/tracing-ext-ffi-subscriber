@@ -3,7 +3,7 @@ use std::io::ErrorKind;
 use cbindgen::Language;
 
 fn main() {
-    if std::env::var_os("DOCS_RS").is_some() { 
+    if std::env::var_os("DOCS_RS").is_some() {
         return;
     }
 
