@@ -170,11 +170,8 @@ pub unsafe extern "C" fn tracing_ffi_install_global_with_config(
         event_enabled_fn,
     );
 
-    let return_code = match tracing::subscriber::set_global_default(subscriber) {
+    match tracing::subscriber::set_global_default(subscriber) {
         Ok(_) => ReturnCode::Success,
         Err(_) => ReturnCode::Failure,
-    };
-
-    tracing::warn!("foobar!");
-    return_code
+    }
 }
