@@ -12,7 +12,6 @@ unsafe extern "C" fn on_event_fn(level: tracing_ext_ffi_subscriber::LogLevel, ms
     eprintln!("{:?}: {}", level, CStr::from_ptr(msg).to_string_lossy());
 }
 
-
 fn main() {
     let config = Configuration {
         enter_fn: Some(enter_fn),
