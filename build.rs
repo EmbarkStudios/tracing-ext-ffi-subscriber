@@ -32,7 +32,7 @@ fn main() {
         .write_to_file(target_dir.join("tracing_ffi.h"));
 
     if let Some(dummy_manifest) = delete_path {
-        if let Err(e) = std::fs::remove_file(&dummy_manifest) {
+        if let Err(e) = std::fs::remove_file(dummy_manifest) {
             if e.kind() != ErrorKind::NotFound {
                 panic!("failed deleting dummy Cargo.lock: {}", e);
             }
