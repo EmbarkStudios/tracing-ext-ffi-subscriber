@@ -72,6 +72,7 @@ unlicensed = "deny"
 allow = [
     "MIT",
     "Apache-2.0",
+    "Unicode-DFS-2016"
     #"Apache-2.0 WITH LLVM-exception",
 ]
 # List of explicitly disallowed licenses
@@ -105,7 +106,7 @@ exceptions = [
     # Only used during builds, pulled in via cbindgen
     { allow = ["BSD-3-Clause"], name = "instant", version = "0.1.12" },
     # Only used during builds, pulled in via cbindgen
-    { allow = ["MPL-2.0"], name = "cbindgen", version = "0.23.0" },
+    { allow = ["MPL-2.0"], name = "cbindgen", version = "0.24.0" },
 ]
 
 # Some crates don't have (easily) machine readable licensing information,
@@ -171,14 +172,14 @@ deny = [
 ]
 # Certain crates/versions that will be skipped when doing duplicate detection.
 skip = [
-    #{ name = "ansi_term", version = "=0.11.0" },
+
 ]
 # Similarly to `skip` allows you to skip certain crates during duplicate
 # detection. Unlike skip, it also includes the entire tree of transitive
 # dependencies starting at the specified crate, up to a certain depth, which is
 # by default infinite
 skip-tree = [
-    #{ name = "ansi_term", version = "=0.11.0", depth = 20 },
+    { name = "cbindgen", version = "=0.24", depth = 20 },
 ]
 
 # This section is considered when running `cargo deny check sources`.

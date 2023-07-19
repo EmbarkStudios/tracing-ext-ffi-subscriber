@@ -16,4 +16,4 @@ parking_lot = "0.12"
 tracing = "0.1"
 
 [build-dependencies]
-cbindgen = "0.23"
+cbindgen = "0.24"

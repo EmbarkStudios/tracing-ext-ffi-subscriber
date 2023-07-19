@@ -43,6 +43,7 @@ pub mod subscriber;
 /// * Is assumed to a valid and 'static pointer matching the signature.
 /// * The pointee of name is not guaranteed to live after the call finishes.
 pub type StartTraceScopeFn = unsafe extern "C" fn(name: *const c_char);
+pub type OptionalStartTraceScopeFn = Option<unsafe extern "C" fn(name: *const c_char)>;
 
 /// Function to be called when exiting a tracing scope.
 ///
@@ -51,6 +52,7 @@ pub type StartTraceScopeFn = unsafe extern "C" fn(name: *const c_char);
 /// * Is assumed to a valid and 'static pointer matching the signature.
 /// * The pointee of name is not guaranteed to live after the call finishes.
 pub type EndTraceScopeFn = unsafe extern "C" fn(name: *const c_char);
+pub type OptionalEndTraceScopeFn = Option<unsafe extern "C" fn(name: *const c_char)>;
 
 /// Function to call to check whether tracing is enabled.
 ///
@@ -58,12 +60,51 @@ pub type EndTraceScopeFn = unsafe extern "C" fn(name: *const c_char);
 ///
 /// * Is assumed to a valid and 'static pointer matching the signature.
 pub type IsEnabledFn = unsafe extern "C" fn() -> bool;
+pub type OptionalIsEnabledFn = Option<unsafe extern "C" fn() -> bool>;
+
+/// Function called for each event.
+///
+/// # Safety
+///
+/// * Is assumed to a valid and 'static pointer matching the signature.
+/// * The pointee of msg is not guaranteed to live after the call finishes.
+pub type OnEventFn = unsafe extern "C" fn(level: LogLevel, msg: *const c_char);
+pub type OptionalOnEventFn = Option<unsafe extern "C" fn(level: LogLevel, msg: *const c_char)>;
+
+/// Function to call to check whether the provided level should be logged.
+///
+/// # Safety
+///
+/// * Is assumed to a valid and 'static pointer matching the signature.
+pub type IsEventEnabledFn = unsafe extern "C" fn(LogLevel) -> bool;
+pub type OptionalIsEventEnabledFn = Option<unsafe extern "C" fn(LogLevel) -> bool>;
 
 /// Simple error codes used for FFI calls.
 #[repr(C)]
 pub enum ReturnCode {
     Success = 0,
     Failure = 1,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+pub enum LogLevel {
+    Trace = 1,
+    Debug = 2,
+    Info = 3,
+    Warn = 4,
+    Error = 5,
+}
+
+/// Configuration used for setting up both tracing and events.
+#[repr(C)]
+pub struct Configuration {
+    pub enter_fn: OptionalStartTraceScopeFn,
+    pub exit_fn: OptionalEndTraceScopeFn,
+    pub enabled_fn: OptionalIsEnabledFn,
+
+    pub on_event_fn: OptionalOnEventFn,
+    pub event_enabled_fn: OptionalIsEventEnabledFn,
 }
 
 /// Install the tracing hook globally with the provided enter and exit functions.
@@ -98,6 +139,37 @@ pub unsafe extern "C" fn tracing_ffi_install_global_with_enabled(
 ) -> ReturnCode {
     let subscriber =
         subscriber::ExternFFISpanSubscriber::new_with_enabled(enter_fn, exit_fn, enabled_fn);
+    match tracing::subscriber::set_global_default(subscriber) {
+        Ok(_) => ReturnCode::Success,
+        Err(_) => ReturnCode::Failure,
+    }
+}
+
+/// Install the tracing hook globally with the provided configuration.
+///
+/// # Safety
+///
+/// * The function pointers must be valid functions matching the provided signature.
+/// * Only one global tracing subscriber may be installed, further installs will return an error.
+#[no_mangle]
+pub unsafe extern "C" fn tracing_ffi_install_global_with_config(
+    configuration: Configuration,
+) -> ReturnCode {
+    let Configuration {
+        enter_fn,
+        exit_fn,
+        enabled_fn,
+        on_event_fn,
+        event_enabled_fn,
+    } = configuration;
+    let subscriber = subscriber::ExternFFISpanSubscriber::new_generic(
+        enter_fn,
+        exit_fn,
+        enabled_fn,
+        on_event_fn,
+        event_enabled_fn,
+    );
+
     match tracing::subscriber::set_global_default(subscriber) {
         Ok(_) => ReturnCode::Success,
         Err(_) => ReturnCode::Failure,
