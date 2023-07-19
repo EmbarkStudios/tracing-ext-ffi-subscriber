@@ -14,9 +14,7 @@ fn main() {
 
     let target_dir = match std::env::var("TRACING_FFI_RELATIVE_OUT_DIR") {
         Ok(relative) => std::path::PathBuf::from(&target_dir).join(relative),
-        Err(_) => {
-            std::path::PathBuf::from(target_dir)
-        }
+        Err(_) => std::path::PathBuf::from(target_dir),
     };
 
     cbindgen::generate_with_config(&crate_dir, config)
